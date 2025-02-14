@@ -36,7 +36,8 @@ module Exporter = struct
           |> Array.iter (fun f -> Filename.concat path f |> export_file)
       | path when Filename.check_suffix path ".zst" -> (
           (* Decompress compressed trace file and submit each line iteratively *)
-          let ic = Unix.open_process_args_in "zstdcat" [|path|] in
+          let args = [|"zstdcat"; path|] in
+          let ic = Unix.open_process_args_in args.(0) args in
           Unixext.lines_iter submit_json ic ;
           match Unix.close_process_in ic with
           | Unix.WEXITED 0 ->
